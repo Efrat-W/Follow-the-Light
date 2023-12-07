@@ -12,8 +12,7 @@ class Main:
         self.W = self.rows * (self.cell_w) + self.margin * 2
 
         win_res = (self.W, self.W)
-        self.win = pygame.display.set_mode(win_res)
-        self.display = pygame.Surface((self.W, self.W))
+        self.display = pygame.display.set_mode(win_res)
         pygame.display.set_caption("Maze Generator")
 
         self.clock = pygame.time.Clock()
@@ -40,9 +39,7 @@ class Main:
             self.grid.render_grid(self.display)
             
 
-
-
-            self.win.blit(pygame.transform.scale(self.display, self.win.get_size()), (0,0))
+            self.display.blit(pygame.transform.scale(self.display, self.display.get_size()), (0,0))
             pygame.display.update()
             self.clock.tick(60)
 
