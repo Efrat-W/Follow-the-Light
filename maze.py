@@ -28,21 +28,22 @@ class Grid:
             self.curr_cell = next
             
         elif len(self.stack) > 0:
-            self.stack.pop()
+            self.curr_cell = self.stack.pop()
 
 
     def render_grid(self, surf):
         [cell.render(surf) for cell in self.grid]
+        pygame.draw.rect(surf, [100,0,10], [self.curr_cell.x, self.curr_cell.y, self.curr_cell.w, self.curr_cell.w])
         self.dfs()
         
 
 
 class Cell:
-    def __init__(self, i, j, width, wall_color = (255,255,255)) -> None:
+    def __init__(self, i, j, width, wall_color = [150,150,150]) -> None:
         self.i, self.j = i, j
         self.x, self.y = i * width, j * width
         self.w = width
-        self.color = (100,100,100)
+        self.color = [100,0,100]
 
         self.visited = False
 
@@ -105,8 +106,8 @@ class Cell:
 
     def render(self, surf):
         if self.visited:
-            self.color = (0,0,0)
             pygame.draw.rect(surf, self.color, [self.x, self.y, self.w, self.w])
+            self.color = [max(c - 5, 0) for c in self.color]
             for side, is_wall in self.walls.items():
                 if is_wall:
                     pygame.draw.line(surf, self.wall_color, self.wall_pos[side][0], self.wall_pos[side][1])

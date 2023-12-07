@@ -33,7 +33,7 @@ class Main:
 
     def run(self):
         while True:
-            self.display.fill((0,255,255))
+            self.display.fill((220,150,220))
 
             self.event()
             #self.gen_grid()
@@ -44,7 +44,7 @@ class Main:
 
             self.win.blit(pygame.transform.scale(self.display, self.win.get_size()), (0,0))
             pygame.display.update()
-            self.clock.tick(10)
+            self.clock.tick(60)
 
 
 if __name__ == '__main__':
