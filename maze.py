@@ -1,5 +1,6 @@
 import pygame
 from random import randint
+from algorithms import *
 
 sides = {'top', 'bottom', 'right', 'left'}
 
@@ -8,33 +9,22 @@ class Grid:
         self.rows = rows
         self.cell_w = cell_w
         self.margin = margin
-        #self.grid = [Cell(x * self.cell_w + self.margin, y * self.cell_w + self.margin, self.cell_w) for y in range(self.rows) for x in range(self.rows)]
+        self.W = self.rows * (self.cell_w) + self.margin * 2
+        self.surf = pygame.Surface((self.W, self.W))
+
         self.grid = [Cell(i, j, self.cell_w) for j in range(self.rows) for i in range(self.rows)]
-        
-        self.curr_cell = self.grid[(len(self.grid)-1) // 2 + self.rows // 2]
+
+        #self.render_algo = dfs(self.grid, self.rows)
+        self.curr_cell = self.grid[0]
         self.curr_cell.visited = True
         self.stack = []
 
 
-    def dfs(self):
-        next = self.curr_cell.check_neighbours(self.grid, self.rows)
-        if next:
-            next.visited = True
-
-            self.stack.append(next)
-
-            self.curr_cell.remove_wall(next)
-
-            self.curr_cell = next
-            
-        elif len(self.stack) > 0:
-            self.curr_cell = self.stack.pop()
-
 
     def render_grid(self, surf):
         [cell.render(surf) for cell in self.grid]
-        pygame.draw.rect(surf, [100,0,10], [self.curr_cell.x, self.curr_cell.y, self.curr_cell.w, self.curr_cell.w])
-        self.dfs()
+        #self.render_algo()
+        dfs(self)
         
 
 
