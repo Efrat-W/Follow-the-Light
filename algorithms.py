@@ -16,7 +16,6 @@ class MazeGen():
         
         if neighbours:
             next = choice(list(neighbours.values()))
-
             next.visited = True
 
             self.stack.append(next)
@@ -27,6 +26,9 @@ class MazeGen():
             
         elif len(self.stack) > 0:
             self.curr_cell = self.stack.pop()
+
+        else:
+            return True
 
         
     def remove_wall(self, next):
@@ -51,27 +53,26 @@ class PathFinder():
         self.end = [grid[-1].i, grid[-1].j]
         self.curr_cell = self.grid[0]
         self.curr_cell.visited = True
+        self.curr_cell.color = [255,255,255]
         self.stack = []
 
 
     def dfs(self):
         neighbours = self.curr_cell.get_neighbours(self.grid, self.rows)
-        for n in neighbours:
-            pass
+        
+        neighbours = {k: v for k, v in neighbours.items() if not self.curr_cell.walls[k]}
 
         if neighbours:
-            next = neighbours[randint(0,len(neighbours)-1)]
+            next = choice(list(neighbours.values()))
 
             if next.i == self.end[0] and next.j == self.end[1]:
                 self.show_path()
                 return True
             
             next.visited = True
-            next.color = [255,255,0]
+            next.color = [255,255,255]
 
             self.stack.append(next)
-
-            self.curr_cell.remove_wall(next)
 
             self.curr_cell = next
             
@@ -79,5 +80,7 @@ class PathFinder():
             self.curr_cell = self.stack.pop()
 
     def show_path(self):
-        pass
+        for cell in self.stack:
+            cell.color = [min(c - 5, 100) for c in self.color]
+
 
