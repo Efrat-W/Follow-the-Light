@@ -1,5 +1,4 @@
 import pygame
-from random import randint
 from algorithms import *
 
 sides = {'top', 'bottom', 'right', 'left'}
@@ -51,26 +50,25 @@ class Cell:
         return None
         
 
-    def check_neighbours(self, grid, rows):
-        neighbours = []
+    def get_neighbours(self, grid, rows):
+        neighbours = {}
 
         top = self.index(grid, self.i, self.j-1, rows)
         bottom = self.index(grid, self.i, self.j+1, rows)
         right = self.index(grid, self.i+1, self.j, rows)
         left = self.index(grid, self.i-1, self.j, rows)
 
-
         if top and not top.visited:
-            neighbours.append(top)
+            neighbours['top'] = top
         if bottom and not bottom.visited:
-            neighbours.append(bottom)
+            neighbours['bottom'] = bottom
         if right and not right.visited:
-            neighbours.append(right)
+            neighbours['right'] = right
         if left and not left.visited:
-            neighbours.append(left)
+            neighbours['left'] = left
 
-        if neighbours:
-            return neighbours[randint(0,len(neighbours)-1)]
+
+        return neighbours
 
         
 
