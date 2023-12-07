@@ -4,6 +4,7 @@ rows = 26
 
 class Player:
     def __init__(self, grid, cell_size):
+        self.win = False
         self.grid = grid
         self.cell_size = cell_size
         self.curr_cell = grid[0]
@@ -31,6 +32,9 @@ class Player:
             self.curr_cell.trail = []
             self.curr_cell = next
             self.curr_cell.traversed = True
+            
+            if self.curr_cell.i == self.curr_cell.j == rows - 1:
+                self.win = True
 
     def render(self, surf):
         self.curr_cell.color = [255,255,100]
