@@ -1,5 +1,6 @@
 
 from random import randint, choice
+from collections import deque
 
 
 class MazeGen():
@@ -9,6 +10,8 @@ class MazeGen():
         self.curr_cell = self.grid[0]
         self.curr_cell.visited = True
         self.stack = []
+
+        self.count = 0
 
     def dfs(self):
         #next = self.curr_cell.check_neighbours(self.grid, self.rows)
@@ -24,13 +27,15 @@ class MazeGen():
 
             self.curr_cell = next
             
+            self.count += 1
+
         elif len(self.stack) > 0:
             self.curr_cell = self.stack.pop()
 
-        else:
+        elif self.count >= self.rows * self.rows -1:
             return True
 
-        
+
     def remove_wall(self, next):
         if self.curr_cell.i > next.i:
             self.curr_cell.walls['left'] = False
@@ -48,12 +53,12 @@ class MazeGen():
 
 class PathFinder():
     def __init__(self, grid, rows) -> None:
-        self.grid = [setattr(cell, 'visited', False) or cell for cell in grid]
+        #self.grid = [setattr(cell, 'visited', False) or cell for cell in grid]
+        self.grid = grid
         self.rows = rows
         self.end = [grid[-1].i, grid[-1].j]
         self.curr_cell = self.grid[0]
         self.curr_cell.visited = True
-        self.curr_cell.color = [255,255,255]
         self.stack = []
 
 
@@ -61,6 +66,7 @@ class PathFinder():
         neighbours = self.curr_cell.get_neighbours(self.grid, self.rows)
         
         neighbours = {k: v for k, v in neighbours.items() if not self.curr_cell.walls[k]}
+        self.curr_cell.color = [255,255,255]
 
         if neighbours:
             next = choice(list(neighbours.values()))
@@ -81,6 +87,6 @@ class PathFinder():
 
     def show_path(self):
         for cell in self.stack:
-            cell.color = [min(c - 5, 100) for c in self.color]
+            cell.color = [min(c - 5, 100) for c in cell.color]
 
 
