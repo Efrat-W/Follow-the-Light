@@ -28,6 +28,7 @@ class Player:
         neighs = {k: v for k, v in neighbours.items() if not self.curr_cell.walls[k]}
 
         if next in neighs.values():
+            self.curr_cell.trail = []
             self.curr_cell = next
             self.curr_cell.traversed = True
 

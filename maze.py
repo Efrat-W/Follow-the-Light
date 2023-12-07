@@ -29,6 +29,13 @@ class Grid:
         self.player.render(surf)
 
     def event(self):
+        trail = self.player.curr_cell.trail
+        trail.append(Particle(self.player.curr_cell.x + self.player.curr_cell.w//2, self.player.curr_cell.y + self.player.curr_cell.w//1.5, self.player.curr_cell.w, (255,220,100)))
+        for particle in trail:
+            particle.update()
+            if particle.radius <= 0:
+                trail.remove(particle)
+
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 pygame.quit()
@@ -53,6 +60,7 @@ class Cell:
         self.x, self.y = i * width, j * width
         self.w = width
         self.color = [100,0,100]
+        self.trail = []
 
         self.visited = False 
         self.traversed = False
@@ -89,7 +97,6 @@ class Cell:
         if left and not left.visited:
             neighbours['left'] = left
 
-
         return neighbours
     
 
@@ -112,9 +119,13 @@ class Cell:
 
 
         return neighbours
-
-        
-
+    
+    def update_trail(self):
+        self.trail.append(Particle(self.x, self.y, self.w, (255,220,100)))
+        for particle in self.trail:
+            particle.update()
+            if particle.radius <= 0:
+                self.trail.remove(particle)
 
     def render(self, surf):
         if self.visited:
@@ -128,5 +139,30 @@ class Cell:
             for side, is_wall in self.walls.items():
                 if is_wall:
                     pygame.draw.line(surf, self.wall_color, self.wall_pos[side][0], self.wall_pos[side][1])
+
+        for particle in self.trail:
+            particle.render(surf)
                         
 
+class Particle:
+    def __init__(self, x, y, size, color) -> None:
+        offset_x = randint(-5, 5)
+        offset_y = randint(-5, 5)
+        self.pos = [x + offset_x, y + offset_y]
+        self.radius = randint(size//5,size//2)
+        #self.timer = self.radius
+        self.color = color
+
+    def update(self):
+        #self.timer -= 1
+        self.radius -= 0.3
+        self.pos[1] -= 1
+
+    def render(self, surface):
+        radius = self.radius
+        color = [max(0, c - 10) for c in self.color]
+        part_surface = pygame.Surface((radius*2, radius*2))
+        pygame.draw.circle(part_surface, color, (radius, radius), radius)
+        part_surface.set_colorkey((0,0,0))
+        part_surface.set_alpha(25 * self.radius)
+        surface.blit(part_surface, (int(self.pos[0] - radius), int(self.pos[1] - radius)))
