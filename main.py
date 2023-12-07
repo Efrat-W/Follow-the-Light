@@ -21,27 +21,18 @@ class Main:
 
 
 
-    def event(self):
-        for e in pygame.event.get():
-                if e.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
-
-
-
-
     def run(self):
         while True:
-            self.display.fill((220,150,220))
+            self.display.fill((10,10,10))
 
-            self.event()
+            self.grid.event()
             #self.gen_grid()
             self.grid.render_grid(self.display)
-            
 
             self.display.blit(pygame.transform.scale(self.display, self.display.get_size()), (0,0))
+
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(10000)
 
 
 if __name__ == '__main__':
