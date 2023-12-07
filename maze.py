@@ -15,16 +15,15 @@ class Grid:
         self.grid = [Cell(i, j, self.cell_w) for j in range(self.rows) for i in range(self.rows)]
 
         #self.render_algo = dfs(self.grid, self.rows)
-        self.curr_cell = self.grid[0]
-        self.curr_cell.visited = True
-        self.stack = []
+        self.maze_gen = MazeGen(self.grid, self.rows)
+        
 
 
 
     def render_grid(self, surf):
         [cell.render(surf) for cell in self.grid]
         #self.render_algo()
-        dfs(self)
+        self.maze_gen.dfs()
         
 
 
@@ -46,23 +45,19 @@ class Cell:
             'left': [(self.x, self.y), (self.x, self.y + self.w)]
         }
 
-    def index(self, i, j, rows):
+    def index(self, grid, i, j, rows):
         if 0 <= i < rows and 0 <= j < rows:
-            return i + j * rows
-        return -1
-        
-    def grid_cell_s(self, grid, i):
-        if i > -1:
-            return grid[i]
+            return grid[i + j * rows]
         return None
+        
 
     def check_neighbours(self, grid, rows):
         neighbours = []
 
-        top = self.grid_cell_s(grid, self.index(self.i, self.j-1, rows))
-        bottom = self.grid_cell_s(grid, self.index(self.i, self.j+1, rows))
-        right = self.grid_cell_s(grid, self.index(self.i+1, self.j, rows))
-        left = self.grid_cell_s(grid, self.index(self.i-1, self.j, rows))
+        top = self.index(grid, self.i, self.j-1, rows)
+        bottom = self.index(grid, self.i, self.j+1, rows)
+        right = self.index(grid, self.i+1, self.j, rows)
+        left = self.index(grid, self.i-1, self.j, rows)
 
 
         if top and not top.visited:
@@ -76,20 +71,6 @@ class Cell:
 
         if neighbours:
             return neighbours[randint(0,len(neighbours)-1)]
-
-    def remove_wall(self, next):
-        if self.i > next.i:
-            self.walls['left'] = False
-            next.walls['right'] = False
-        elif self.i < next.i:
-            self.walls['right'] = False
-            next.walls['left'] = False
-        elif self.j > next.j:
-            self.walls['top'] = False
-            next.walls['bottom'] = False
-        elif self.j < next.j:
-            self.walls['bottom'] = False
-            next.walls['top'] = False
 
         
 
