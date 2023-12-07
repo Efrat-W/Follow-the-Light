@@ -1,5 +1,5 @@
 import pygame
-from random import randint
+from algorithms import *
 
 sides = {'top', 'bottom', 'right', 'left'}
 
@@ -8,33 +8,21 @@ class Grid:
         self.rows = rows
         self.cell_w = cell_w
         self.margin = margin
-        #self.grid = [Cell(x * self.cell_w + self.margin, y * self.cell_w + self.margin, self.cell_w) for y in range(self.rows) for x in range(self.rows)]
+        self.W = self.rows * (self.cell_w) + self.margin * 2
+        self.surf = pygame.Surface((self.W, self.W))
+
         self.grid = [Cell(i, j, self.cell_w) for j in range(self.rows) for i in range(self.rows)]
+
+        #self.render_algo = dfs(self.grid, self.rows)
+        self.maze_gen = MazeGen(self.grid, self.rows)
         
-        self.curr_cell = self.grid[(len(self.grid)-1) // 2 + self.rows // 2]
-        self.curr_cell.visited = True
-        self.stack = []
 
-
-    def dfs(self):
-        next = self.curr_cell.check_neighbours(self.grid, self.rows)
-        if next:
-            next.visited = True
-
-            self.stack.append(next)
-
-            self.curr_cell.remove_wall(next)
-
-            self.curr_cell = next
-            
-        elif len(self.stack) > 0:
-            self.curr_cell = self.stack.pop()
 
 
     def render_grid(self, surf):
         [cell.render(surf) for cell in self.grid]
-        pygame.draw.rect(surf, [100,0,10], [self.curr_cell.x, self.curr_cell.y, self.curr_cell.w, self.curr_cell.w])
-        self.dfs()
+        #self.render_algo()
+        self.maze_gen.dfs()
         
 
 
@@ -56,50 +44,31 @@ class Cell:
             'left': [(self.x, self.y), (self.x, self.y + self.w)]
         }
 
-    def index(self, i, j, rows):
+    def index(self, grid, i, j, rows):
         if 0 <= i < rows and 0 <= j < rows:
-            return i + j * rows
-        return -1
-        
-    def grid_cell_s(self, grid, i):
-        if i > -1:
-            return grid[i]
+            return grid[i + j * rows]
         return None
+        
 
-    def check_neighbours(self, grid, rows):
-        neighbours = []
+    def get_neighbours(self, grid, rows):
+        neighbours = {}
 
-        top = self.grid_cell_s(grid, self.index(self.i, self.j-1, rows))
-        bottom = self.grid_cell_s(grid, self.index(self.i, self.j+1, rows))
-        right = self.grid_cell_s(grid, self.index(self.i+1, self.j, rows))
-        left = self.grid_cell_s(grid, self.index(self.i-1, self.j, rows))
-
+        top = self.index(grid, self.i, self.j-1, rows)
+        bottom = self.index(grid, self.i, self.j+1, rows)
+        right = self.index(grid, self.i+1, self.j, rows)
+        left = self.index(grid, self.i-1, self.j, rows)
 
         if top and not top.visited:
-            neighbours.append(top)
+            neighbours['top'] = top
         if bottom and not bottom.visited:
-            neighbours.append(bottom)
+            neighbours['bottom'] = bottom
         if right and not right.visited:
-            neighbours.append(right)
+            neighbours['right'] = right
         if left and not left.visited:
-            neighbours.append(left)
+            neighbours['left'] = left
 
-        if neighbours:
-            return neighbours[randint(0,len(neighbours)-1)]
 
-    def remove_wall(self, next):
-        if self.i > next.i:
-            self.walls['left'] = False
-            next.walls['right'] = False
-        elif self.i < next.i:
-            self.walls['right'] = False
-            next.walls['left'] = False
-        elif self.j > next.j:
-            self.walls['top'] = False
-            next.walls['bottom'] = False
-        elif self.j < next.j:
-            self.walls['bottom'] = False
-            next.walls['top'] = False
+        return neighbours
 
         
 
