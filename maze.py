@@ -28,31 +28,6 @@ class Grid:
         [cell.render(surf) for cell in self.grid]
         self.player.render(surf)
 
-    def event(self):
-        trail = self.player.curr_cell.trail
-        trail.append(Particle(self.player.curr_cell.x + self.player.curr_cell.w//2, self.player.curr_cell.y + self.player.curr_cell.w//1.5, self.player.curr_cell.w, (255,220,100)))
-        for particle in trail:
-            particle.update()
-            if particle.radius <= 0:
-                trail.remove(particle)
-
-        for e in pygame.event.get():
-            if e.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_UP:
-                    self.player.move("UP")
-                elif e.key == pygame.K_DOWN:
-                    self.player.move("DOWN")
-                elif e.key == pygame.K_LEFT:
-                    self.player.move("LEFT")
-                elif e.key == pygame.K_RIGHT:
-                    self.player.move("RIGHT")
-
-
-        
-
 
 class Cell:
     def __init__(self, i, j, width, wall_color = [100,10,150]) -> None:
