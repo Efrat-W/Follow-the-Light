@@ -1,6 +1,5 @@
 
-from random import randint, choice
-from collections import deque
+from random import choice
 
 
 class MazeGen():

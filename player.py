@@ -1,6 +1,6 @@
 import pygame
 
-rows = 26
+rows = 20
 
 class Player:
     def __init__(self, grid, cell_size):
@@ -33,7 +33,7 @@ class Player:
             self.curr_cell = next
             self.curr_cell.traversed = True
             
-            if self.curr_cell.i == self.curr_cell.j == rows - 1:
+            if self.curr_cell.goal:
                 self.win = True
 
     def render(self, surf):

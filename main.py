@@ -1,19 +1,19 @@
 import pygame
 from maze import *
 from sys import exit
-from random import random
 
 class Main:
     def __init__(self):
         pygame.init()
-        self.cell_w = 20
-        self.margin = 2
-        self.rows = 26
-        self.W = self.rows * (self.cell_w) + self.margin * 2
+        self.cell_w = 22
+        self.margin = 20
+        self.rows = 20
+        self.W = self.rows * (self.cell_w - 4) +6
 
         win_res = (self.W, self.W)
-        self.display = pygame.display.set_mode(win_res)
-        pygame.display.set_caption("Maze Generator")
+        self.win = pygame.display.set_mode([i * 1.4 for i in win_res])
+        self.display = pygame.Surface((self.W, self.W))
+        pygame.display.set_caption("Seek the Light")
 
         self.clock = pygame.time.Clock()
 
@@ -51,7 +51,7 @@ class Main:
         start_ticks = pygame.time.get_ticks()
 
         while True:
-            self.display.fill((10,10,10))
+            self.display.fill((0,0,0))
 
             
             self.event()
@@ -59,32 +59,32 @@ class Main:
                 
             self.grid.render_grid(self.display)
 
-            self.display.blit(pygame.transform.scale(self.display, self.display.get_size()), (0,0))
 
-            # Assuming self.display is your pygame Surface object
             if self.grid.player.win:
                 time = (end_ticks - start_ticks) // 1000
                 # Create a semi-transparent surface
                 semi_transparent_surface = pygame.Surface(self.display.get_size(), pygame.SRCALPHA)
-                semi_transparent_surface.fill((255, 200, 0, 150))  # RGBA for semi-transparent orangish-yellow
+                semi_transparent_surface.fill((255, 200, 0, 150))  
 
                 self.display.blit(semi_transparent_surface, (0, 0))
 
                 #text = font.render("WIN", True, (255, 255, 255)) 
-                text = pygame.font.Font(None, 64).render(f"Your time: {time} seconds", True, (255, 255, 255))
-                restart_text = pygame.font.Font(None, 24).render("<Press SPACE to restart>", True, (255, 200, 200))
+                text = pygame.font.Font(None, rows*2).render(f"Your time: {time} seconds", True, (255, 255, 255))
+                restart_text = pygame.font.Font(None, int(rows*1.2)).render("Press <SPACE> to restart", True, (200, 200, 200))
 
                 center_x = self.display.get_width() // 2
                 center_y = self.display.get_height() // 2
 
-                text_rect = text.get_rect(center=(center_x, center_y - 30))
-                restart_rect = text.get_rect(center=(center_x, center_y + 30))
+                text_rect = text.get_rect(center=(center_x, center_y - rows*1.5))
+                restart_rect = text.get_rect(center=(center_x, center_y + rows*1.5))
 
 
                 self.display.blit(text, text_rect)
                 self.display.blit(restart_text, restart_rect)
             else:
                 end_ticks = pygame.time.get_ticks()
+
+            self.win.blit(pygame.transform.scale(self.display, self.win.get_size()), (0,0))
 
             pygame.display.update()
             self.clock.tick(100)

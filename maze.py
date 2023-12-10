@@ -1,6 +1,7 @@
 import pygame
 from algorithms import *
 from player import *
+from random import randint
 
 
 sides = {'top', 'bottom', 'right', 'left'}
@@ -8,12 +9,13 @@ sides = {'top', 'bottom', 'right', 'left'}
 class Grid:
     def __init__(self, rows, cell_w, margin) -> None:
         self.rows = rows
-        self.cell_w = cell_w
+        self.cell_w = cell_w -4
         self.margin = margin
-        self.W = self.rows * (self.cell_w) + self.margin * 2
+        self.W = self.rows * (self.cell_w)
         self.surf = pygame.Surface((self.W, self.W))
 
-        self.grid = [Cell(i, j, self.cell_w) for j in range(self.rows) for i in range(self.rows)]
+        self.grid = [Cell(i, j, self.cell_w, is_goal= i == j == rows-1 ) for j in range(self.rows) for i in range(self.rows)]
+
 
         self.maze_gen = MazeGen(self.grid, self.rows)
         
@@ -27,15 +29,31 @@ class Grid:
             #self.render_algo = self.path.dfs
         [cell.render(surf) for cell in self.grid]
         self.player.render(surf)
+        self.grid[-1].update_trail()
+        #self.spotlight()
+
+    def spotlight(self):
+        spot_surf = pygame.Surface(self.surf.get_size(), pygame.SRCALPHA)
+        radius = self.cell_w * 3
+        center = [i//2 for i in self.surf.get_size()]
+
+        while radius > self.cell_w:
+            # add circles of radius value alpha,
+            pygame.draw.circle(spot_surf, (255, 255, 255, radius), center, radius)
+            radius -= 5
+        self.surf.blit(spot_surf, (self.player.curr_cell.x, self.player.curr_cell.y))
+
 
 
 class Cell:
-    def __init__(self, i, j, width, wall_color = [100,10,150]) -> None:
+    def __init__(self, i, j, width, wall_color = [50,10,100], is_goal = False) -> None:
         self.i, self.j = i, j
-        self.x, self.y = i * width, j * width
+        self.x, self.y = i * width + 2, j * width + 2
         self.w = width
-        self.color = [100,0,100]
+        
         self.trail = []
+        self.goal = is_goal
+        self.color = [100,0,100] if not self.goal else [240,200,100]
 
         self.visited = False 
         self.traversed = False
@@ -96,7 +114,7 @@ class Cell:
         return neighbours
     
     def update_trail(self):
-        self.trail.append(Particle(self.x, self.y, self.w, (255,220,100)))
+        self.trail.append(Particle(self.x+self.w//2, self.y, self.w, (255,220,100)))
         for particle in self.trail:
             particle.update()
             if particle.radius <= 0:
@@ -105,15 +123,17 @@ class Cell:
     def render(self, surf):
         if self.visited:
             if self.traversed:
-                self.color = [max(c - 0.1, 150) for c in self.color]
+                self.color = [max(c - c * 0.005, 5) for c in self.color]
+            elif self.goal:
+                pass
             else:
-                self.color = [max(c - 10, 0) for c in self.color]
+                self.color = [max(c - c * 0.1, 0) for c in self.color]
             
             pygame.draw.rect(surf, self.color, [self.x, self.y, self.w, self.w])
 
             for side, is_wall in self.walls.items():
                 if is_wall:
-                    pygame.draw.line(surf, self.wall_color, self.wall_pos[side][0], self.wall_pos[side][1])
+                    pygame.draw.line(surf, self.wall_color, self.wall_pos[side][0], self.wall_pos[side][1], 2)
 
         for particle in self.trail:
             particle.render(surf)
@@ -135,7 +155,7 @@ class Particle:
 
     def render(self, surface):
         radius = self.radius
-        color = [max(0, c - 10) for c in self.color]
+        color = [max(50, c - 0.5) for c in self.color]
         part_surface = pygame.Surface((radius*2, radius*2))
         pygame.draw.circle(part_surface, color, (radius, radius), radius)
         part_surface.set_colorkey((0,0,0))
